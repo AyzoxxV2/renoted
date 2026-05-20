@@ -8,8 +8,8 @@ const trustItems = [
     description: 'N°1 rénovation énergétique',
     logo: (
       <div className="flex items-center gap-2">
-        <div className="h-8 w-8 rounded bg-[#1EB564] flex items-center justify-center">
-          <span className="text-white font-bold text-sm">E</span>
+        <div className="h-8 w-8 rounded bg-[#FFD400] flex items-center justify-center">
+          <span className="text-[#0F172A] font-bold text-sm">E</span>
         </div>
         <span className="font-bold text-[#0F172A] text-lg">Effy</span>
       </div>

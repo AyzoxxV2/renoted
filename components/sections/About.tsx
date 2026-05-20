@@ -66,7 +66,7 @@ export default function About() {
               </div>
               {/* Badge overlay */}
               <div className="absolute -bottom-4 -right-4 lg:right-auto lg:-left-4 bg-white rounded-xl shadow-card-hover p-3 border border-slate-200">
-                <p className="text-[#1EB564] font-bold text-sm">✓ Mandataire officiel</p>
+                <p className="text-[#B68400] font-bold text-sm">E Mandataire officiel</p>
                 <p className="text-slate-500 text-xs">Partenaire Effy certifié</p>
               </div>
             </div>

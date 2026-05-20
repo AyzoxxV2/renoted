@@ -140,10 +140,10 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-flex items-center gap-2 bg-[#1EB564]/20 border border-[#1EB564]/40 text-[#1EB564] text-sm font-semibold px-4 py-2 rounded-full mb-6">
+            <span className="inline-flex items-center gap-2 bg-[#FFD400]/20 border border-[#FFD400]/50 text-[#FFE66D] text-sm font-semibold px-4 py-2 rounded-full mb-6">
               <span className="flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-[#1EB564] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1EB564]"></span>
+                <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-[#FFD400] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FFD400]"></span>
               </span>
               ✓ Mandataire officiel Effy — Hauts-de-France
             </span>
@@ -211,7 +211,7 @@ export default function Hero() {
             className="flex flex-wrap items-center gap-3"
           >
             {[
-              { icon: '✓', text: 'Partenaire officiel Effy' },
+              { icon: 'E', text: 'Partenaire officiel Effy', effy: true },
               { icon: '🏅', text: 'Artisans RGE certifiés' },
               { icon: '€', text: 'Reste à charge optimisé' },
               { icon: '⭐', text: 'Accompagnement local' },
@@ -220,7 +220,9 @@ export default function Hero() {
                 key={badge.text}
                 className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white/90 text-xs font-medium px-3 py-1.5 rounded-full border border-white/20"
               >
-                <span className="text-[#1EB564]">{badge.icon}</span>
+                <span className={badge.effy ? 'text-[#FFD400] font-extrabold' : 'text-[#1EB564]'}>
+                  {badge.icon}
+                </span>
                 {badge.text}
               </span>
             ))}
