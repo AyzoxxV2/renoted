@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a2218"/>
+      <stop offset="0.48" stop-color="#0D7A3E"/>
+      <stop offset="1" stop-color="#1EB564"/>
+    </linearGradient>
+    <pattern id="dots" width="36" height="36" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.2" fill="#ffffff" opacity="0.16"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#dots)" opacity="0.45"/>
+  <circle cx="1040" cy="120" r="220" fill="#1EB564" opacity="0.16"/>
+  <circle cx="80" cy="560" r="260" fill="#ffffff" opacity="0.06"/>
+  <text x="82" y="106" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800">Renoted</text>
+  <circle cx="272" cy="91" r="8" fill="#1EB564"/>
+  <rect x="82" y="154" width="385" height="44" rx="22" fill="#1EB564" opacity="0.18" stroke="#1EB564" stroke-opacity="0.45"/>
+  <text x="108" y="183" fill="#8EF0B9" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700">Mandataire local Effy - Hauts-de-France</text>
+  <text x="82" y="286" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="900">Renovation energetique</text>
+  <text x="82" y="366" fill="#8EF0B9" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="900">Hauts-de-France</text>
+  <text x="82" y="438" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="800">Isolation, PAC, solaire, aides 2026</text>
+  <text x="82" y="500" fill="#d9fbe7" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="600">Rendez-vous gratuit sous 24h - 06.24.29.10.96</text>
+  <rect x="775" y="170" width="330" height="300" rx="28" fill="#ffffff" opacity="0.13" stroke="#ffffff" stroke-opacity="0.22"/>
+  <text x="815" y="228" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800">Devis gratuit</text>
+  <text x="815" y="286" fill="#d9fbe7" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">Artisans RGE</text>
+  <text x="815" y="344" fill="#d9fbe7" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">Aides calculees</text>
+  <text x="815" y="402" fill="#d9fbe7" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">Accompagnement local</text>
+</svg>

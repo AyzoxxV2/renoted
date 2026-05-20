@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" role="img" aria-labelledby="title desc">
+  <title id="title">Renoted</title>
+  <desc id="desc">Logo Renoted</desc>
+  <rect width="260" height="64" rx="14" fill="#0F172A"/>
+  <text x="24" y="41" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="800">Renoted</text>
+  <circle cx="181" cy="32" r="7" fill="#1EB564"/>
+  <text x="198" y="37" fill="#8EF0B9" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700">RGE</text>
+</svg>

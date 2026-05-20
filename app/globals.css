@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --green-primary: #1EB564;
+  --green-dark: #0D7A3E;
+  --navy: #0F172A;
+  --white-off: #F8FAFC;
+  --gray-light: #E2E8F0;
+  --orange-accent: #F97316;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-navy antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-green {
+    background: linear-gradient(135deg, #0D7A3E 0%, #1EB564 100%);
+  }
+
+  .gradient-hero {
+    background: linear-gradient(160deg, #0a2218 0%, #0D7A3E 40%, #1EB564 100%);
+  }
+
+  .gradient-section {
+    background: linear-gradient(180deg, #F8FAFC 0%, #ffffff 100%);
+  }
+}
+
+/* Smooth scrolling */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #1EB564;
+  border-radius: 3px;
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid #1EB564;
+  outline-offset: 2px;
+}
