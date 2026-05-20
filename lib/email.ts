@@ -21,7 +21,12 @@ const projectTypeLabels: Record<string, string> = {
 }
 
 // Utilise Resend si RESEND_API_KEY est défini, sinon log en console (dev)
-async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  replyTo?: string
+): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY
   const fromEmail = process.env.FROM_EMAIL || 'no-reply@renoted.fr'
 
@@ -43,12 +48,25 @@ async function sendEmail(to: string, subject: string, html: string): Promise<boo
       body: JSON.stringify({
         from: `Renoted <${fromEmail}>`,
         to: [to],
+        reply_to: replyTo,
         subject,
         html,
       }),
     })
 
-    return response.ok
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => 'Impossible de lire la réponse Resend')
+      console.error('Erreur Resend:', {
+        status: response.status,
+        to,
+        from: fromEmail,
+        subject,
+        body: errorBody,
+      })
+      return false
+    }
+
+    return true
   } catch (error) {
     console.error('Erreur envoi email:', error)
     return false
@@ -61,74 +79,119 @@ export async function sendLeadEmailToTeddy(data: ContactFormData): Promise<boole
   const safeEmail = escapeHtml(data.email)
   const safeTelephone = escapeHtml(data.telephone)
   const safeMessage = data.message ? escapeHtml(data.message).replace(/\n/g, '<br>') : ''
+  const projectLabel = projectTypeLabels[data.typeProjet] || data.typeProjet
+  const requestDate = new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })
+  const sourcePath = data.sourcePath ? escapeHtml(data.sourcePath) : 'Page non renseignée'
 
   const html = `
     <!DOCTYPE html>
     <html lang="fr">
-    <head><meta charset="UTF-8"><style>
-      body { font-family: Inter, Arial, sans-serif; background: #f8fafc; margin: 0; padding: 20px; }
-      .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.07); }
-      .header { background: linear-gradient(135deg, #0D7A3E, #1EB564); padding: 32px; color: white; }
-      .header h1 { margin: 0; font-size: 24px; }
-      .header p { margin: 8px 0 0; opacity: 0.9; }
-      .body { padding: 32px; }
-      .field { margin-bottom: 20px; border-bottom: 1px solid #E2E8F0; padding-bottom: 16px; }
-      .field:last-child { border-bottom: none; }
-      .label { font-size: 12px; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-      .value { font-size: 16px; color: #0F172A; font-weight: 500; }
-      .badge { display: inline-block; background: #E8F8EF; color: #0D7A3E; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
-      .footer { background: #F8FAFC; padding: 20px 32px; font-size: 13px; color: #64748B; }
-      .cta { display: inline-block; background: #1EB564; color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; margin-top: 16px; }
-    </style></head>
-    <body>
-    <div class="container">
-      <div class="header">
-        <h1>🔔 Nouveau lead — Renoted</h1>
-        <p>Un prospect vient de remplir le formulaire de contact</p>
-      </div>
-      <div class="body">
-        <div class="field">
-          <div class="label">Identité</div>
-          <div class="value">${safePrenom} ${safeNom}</div>
-        </div>
-        <div class="field">
-          <div class="label">Email</div>
-          <div class="value"><a href="mailto:${safeEmail}">${safeEmail}</a></div>
-        </div>
-        <div class="field">
-          <div class="label">Téléphone</div>
-          <div class="value"><a href="tel:${safeTelephone}">${safeTelephone}</a></div>
-        </div>
-        <div class="field">
-          <div class="label">Type de projet</div>
-          <div class="value"><span class="badge">${projectTypeLabels[data.typeProjet] || data.typeProjet}</span></div>
-        </div>
-        ${data.message ? `
-        <div class="field">
-          <div class="label">Message</div>
-          <div class="value">${safeMessage}</div>
-        </div>
-        ` : ''}
-        <div class="field">
-          <div class="label">Consentement marketing</div>
-          <div class="value">${data.marketing ? '✅ Accepté — à inscrire dans la liste marketing' : '❌ Non accepté — confirmation simple uniquement'}</div>
-        </div>
-        <div class="field">
-          <div class="label">Date de la demande</div>
-          <div class="value">${new Date().toLocaleString('fr-FR', { timeZone: 'Europe/Paris' })}</div>
-        </div>
-        <a href="tel:${safeTelephone}" class="cta">📞 Appeler maintenant</a>
-      </div>
-      <div class="footer">
-        Renoted • Mandataire local Effy Hauts-de-France • contact@renoted.fr
-      </div>
-    </div>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Nouveau lead Renoted</title>
+    </head>
+    <body style="margin:0; padding:0; background:#f3f6f5; font-family:Arial, Helvetica, sans-serif; color:#0f172a;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f3f6f5; padding:24px 12px;">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px; background:#ffffff; border:1px solid #d9e4dd; border-radius:14px; overflow:hidden;">
+              <tr>
+                <td style="background:#0d7a3e; padding:26px 28px;">
+                  <p style="margin:0 0 8px; color:#b9f6d2; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;">Nouveau lead Renoted</p>
+                  <h1 style="margin:0; color:#ffffff; font-size:26px; line-height:1.2;">${safePrenom} ${safeNom}</h1>
+                  <p style="margin:10px 0 0; color:#e6fff0; font-size:15px;">Demande d'étude gratuite reçue le ${requestDate}</p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:24px 28px 8px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td style="padding:0 0 12px;">
+                        <span style="display:inline-block; background:#e8f8ef; color:#0d7a3e; border:1px solid #bdeccd; border-radius:999px; padding:8px 12px; font-size:14px; font-weight:700;">${projectLabel}</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:18px;">
+                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td style="padding:0 0 14px;">
+                              <p style="margin:0 0 4px; color:#64748b; font-size:12px; font-weight:700; text-transform:uppercase;">Téléphone</p>
+                              <a href="tel:${safeTelephone}" style="color:#0f172a; font-size:22px; font-weight:800; text-decoration:none;">${safeTelephone}</a>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="padding:0;">
+                              <p style="margin:0 0 4px; color:#64748b; font-size:12px; font-weight:700; text-transform:uppercase;">Email</p>
+                              <a href="mailto:${safeEmail}" style="color:#0d7a3e; font-size:17px; font-weight:700; text-decoration:underline;">${safeEmail}</a>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:12px 28px;">
+                  <table role="presentation" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td style="padding:0 10px 10px 0;">
+                        <a href="tel:${safeTelephone}" style="display:inline-block; background:#1eb564; color:#ffffff; font-size:15px; font-weight:800; text-decoration:none; padding:13px 18px; border-radius:9px;">Appeler le prospect</a>
+                      </td>
+                      <td style="padding:0 0 10px;">
+                        <a href="mailto:${safeEmail}?subject=Votre demande d'étude Renoted" style="display:inline-block; background:#ffffff; color:#0d7a3e; border:1px solid #0d7a3e; font-size:15px; font-weight:800; text-decoration:none; padding:12px 18px; border-radius:9px;">Répondre par email</a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              ${data.message ? `
+              <tr>
+                <td style="padding:4px 28px 16px;">
+                  <p style="margin:0 0 8px; color:#64748b; font-size:12px; font-weight:700; text-transform:uppercase;">Message du prospect</p>
+                  <div style="background:#fffaf0; border:1px solid #f6d488; border-left:5px solid #eab308; border-radius:10px; padding:16px; color:#1f2937; font-size:16px; line-height:1.55;">${safeMessage}</div>
+                </td>
+              </tr>
+              ` : ''}
+              <tr>
+                <td style="padding:4px 28px 24px;">
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse; border:1px solid #e2e8f0; border-radius:10px; overflow:hidden;">
+                    <tr>
+                      <td style="background:#f8fafc; color:#64748b; padding:12px 14px; font-size:13px; font-weight:700; width:42%;">Nom complet</td>
+                      <td style="padding:12px 14px; font-size:14px; font-weight:700;">${safePrenom} ${safeNom}</td>
+                    </tr>
+                    <tr>
+                      <td style="background:#f8fafc; color:#64748b; padding:12px 14px; font-size:13px; font-weight:700;">Projet</td>
+                      <td style="padding:12px 14px; font-size:14px;">${projectLabel}</td>
+                    </tr>
+                    <tr>
+                      <td style="background:#f8fafc; color:#64748b; padding:12px 14px; font-size:13px; font-weight:700;">Marketing</td>
+                      <td style="padding:12px 14px; font-size:14px;">${data.marketing ? 'Accepté' : 'Refusé'}</td>
+                    </tr>
+                    <tr>
+                      <td style="background:#f8fafc; color:#64748b; padding:12px 14px; font-size:13px; font-weight:700;">Page source</td>
+                      <td style="padding:12px 14px; font-size:14px;">${sourcePath}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="background:#f8fafc; border-top:1px solid #e2e8f0; padding:18px 28px; color:#64748b; font-size:13px; line-height:1.5;">
+                  Renoted - Mandataire local Effy Hauts-de-France<br>
+                  Email automatique envoyé depuis le formulaire de contact de renoted.fr.
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
     </body>
     </html>
   `
 
   const teddyEmail = process.env.TEDDY_EMAIL || 'contact@renoted.fr'
-  return sendEmail(teddyEmail, `🔔 Nouveau lead : ${data.prenom} ${data.nom} — ${projectTypeLabels[data.typeProjet] || data.typeProjet}`, html)
+  return sendEmail(teddyEmail, `Nouveau lead Renoted : ${data.prenom} ${data.nom} - ${projectLabel}`, html, data.email)
 }
 
 export async function sendConfirmationEmail(data: ContactFormData): Promise<boolean> {
